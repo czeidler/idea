@@ -170,6 +170,19 @@ public abstract class MetaManager extends ModelLoader {
     return new PaletteGroup(name);
   }
 
+  @NotNull
+  protected PaletteGroup ensurePaletteGroup(String name) {
+    for (PaletteGroup group : myPaletteGroups) {
+      if (group.getName().equals(name))
+        return group;
+    }
+
+    // create new group
+    PaletteGroup group = createPaletteGroup(name);
+    myPaletteGroups.add(group);
+    return group;
+  }
+
   protected void loadProperties(MetaModel meta, Element properties) throws Exception {
     Attribute inplace = properties.getAttribute("inplace");
     if (inplace != null) {
@@ -207,7 +220,8 @@ public abstract class MetaManager extends ModelLoader {
 
   @NotNull
   protected PaletteGroup loadGroup(Element element) throws Exception {
-    PaletteGroup group = createPaletteGroup(element.getAttributeValue(NAME));
+    String groupName = element.getAttributeValue(NAME);
+    PaletteGroup group = ensurePaletteGroup(groupName);
 
     for (Element itemElement : element.getChildren(ITEM)) {
       MetaModel model = getModelByTag(itemElement.getAttributeValue(TAG));
@@ -236,8 +250,6 @@ public abstract class MetaManager extends ModelLoader {
         group.addItem(paletteItem);
       }
     }
-
-    myPaletteGroups.add(group);
 
     return group;
   }

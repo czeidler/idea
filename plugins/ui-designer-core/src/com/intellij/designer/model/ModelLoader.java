@@ -38,14 +38,17 @@ public abstract class ModelLoader {
   protected final void load(String name) {
     try {
       InputStream stream = getClass().getResourceAsStream(name);
-      Document document = new SAXBuilder().build(stream);
+      load(stream);
       stream.close();
-
-      loadDocument(document.getRootElement());
     }
     catch (Throwable e) {
       LOG.error(e);
     }
+  }
+
+  public final void load(InputStream stream) throws Exception {
+    Document document = new SAXBuilder().build(stream);
+    loadDocument(document.getRootElement());
   }
 
   protected abstract void loadDocument(Element rootElement) throws Exception;
